@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Subir Múltiples Imágenes y Videos</title>
+</head>
+<body>
+    <form id="fileUploadForm" enctype="multipart/form-data">
+        <!-- Permitir a los usuarios seleccionar múltiples archivos -->
+        <input type="file" name="image" multiple accept="image/*, video/*">
+        <button type="submit">Subir Archivos</button>
+    </form>
+
+    <div id="progress">
+        <p>Progreso de carga:</p>
+        <progress id="progressBar" max="100" value="0"></progress>
+        <p id="progressStatus">0%</p>
+    </div>
+
+    <script>
+        // Cuando se envía el formulario
+        document.getElementById("fileUploadForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            const formData = new FormData(this);
+            const progressBar = document.getElementById("progressBar");
+            const progressStatus = document.getElementById("progressStatus");
+
+            // Crear una solicitud AJAX para cargar los archivos
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "/upload", true);
+
+            xhr.upload.onprogress = function (e) {
+                if (e.lengthComputable) {
+                    const percentComplete = (e.loaded / e.total) * 100;
+                    progressBar.value = percentComplete;
+                    progressStatus.innerText = percentComplete.toFixed(2) + "%";
+                }
+            };
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        // Éxito: mostrar un mensaje o realizar otras acciones
+                        alert("Archivos subidos exitosamente.");
+                    } else {
+                        // Error: mostrar un mensaje de error o manejar de otra manera
+                        alert("Error al subir archivos.");
+                    }
+                }
+            };
+
+            // Enviar la solicitud con el formulario y los archivos
+            xhr.send(formData);
+        });
+    </script>
+</body>
+</html>
